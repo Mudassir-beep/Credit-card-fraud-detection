@@ -12,10 +12,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Login to Hugging Face Registry (with DNS fix)
-        run: |
-          echo "104.18.32.73 registry.huggingface.co" >> /etc/hosts   # ← this line fixes it
-          echo "${{ secrets.HF_TOKEN }}" | docker login registry.huggingface.co -u muddasser --password-stdin
+      # ← BEST FIX – use official action (no DNS problems ever)
+      - name: Login to Hugging Face Registry
+        uses: docker/login-action@v3
+        with:
+          registry: registry.huggingface.co
+          username: muddasser
+          password: ${{ secrets.HF_TOKEN }}
 
       - name: Build & Push Docker image
         run: |
