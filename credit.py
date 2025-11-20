@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 # Load data and train the model (ideally should be pre-trained & loaded in production)
-df = pd.read_csv('C:/Users/Mudassir/Downloads/creditcard.csv')
+df = pd.read_csv('creditcard.csv')
 y = df['Class']
 x = df.drop(['Class'], axis=1)
 
@@ -27,7 +27,7 @@ st.title("Credit Card Fraud Detection")
 
 # Image
 try:
-    img = Image.open('C:/Users/Mudassir/Downloads/Credit_card.png')
+    img = Image.open('Credit_card.png')
     st.image(img, width=200)
 except Exception as e:
     st.warning("⚠️ Could not load image. Check file path or format.")
