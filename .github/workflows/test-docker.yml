@@ -8,7 +8,7 @@ jobs:
     steps:
     - name: Pull and run image
       run: |
-        docker pull yourusername/your-image:latest
+        docker pull yourusername/Build Docker Image
         docker run -d -p 3000:3000 --name test-container yourusername/your-image:latest
         sleep 10
         
