@@ -1,36 +1,26 @@
 name: Test Docker Image
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push, workflow_dispatch]
 
 jobs:
-  test-docker-image:
+  test:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Pull and run Docker image
+    - name: Pull and run image
       run: |
-        docker pull your-username/your-image-name:tag
-        docker run -d -p 8080:80 --name test-container your-username/your-image-name:tag
-        sleep 10  # wait for container to start
+        docker pull yourusername/your-image:latest
+        docker run -d -p 3000:3000 --name test-container yourusername/your-image:latest
+        sleep 10
         
-    - name: Test container
-      run: |
-        # Check if container is running
-        docker ps
+        # Test if container is running
+        docker ps | grep test-container
+        
         # Check logs
         docker logs test-container
-        # Test if application responds (for web apps)
-        curl -f http://localhost:8080 || echo "Application test completed"
         
-    - name: Cleanup
-      if: always()
-      run: |
-        docker stop test-container || true
-        docker rm test-container || true
+        # Test endpoint (if web app)
+        curl -f http://localhost:3000 || echo "Container is running but no web endpoint"
+        
+        # Cleanup
+        docker stop test-container
+        docker rm test-container
