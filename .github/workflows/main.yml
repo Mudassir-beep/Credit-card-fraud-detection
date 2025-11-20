@@ -1,0 +1,30 @@
+name: Deploy Docker to Hugging Face Space
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Hugging Face Registry
+        run: |
+          echo "${{ secrets.HF_TOKEN }}" | docker login registry.huggingface.co -u muddasser --password-stdin
+
+      - name: Build & Push Docker image
+        run: |
+          docker build . -t registry.huggingface.co/spaces/muddasser/creditcarddocker/app:latest
+          docker build . -t registry.huggingface.co/spaces/muddasser/creditcarddocker/app:${{ github.sha }}
+          docker push registry.huggingface.co/spaces/muddasser/creditcarddocker/app:latest
+          docker push registry.huggingface.co/spaces/muddasser/creditcarddocker/app:${{ github.sha }}
+
+      - name: Restart Hugging Face Space
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.HF_TOKEN }}" \
+            https://huggingface.co/api/spaces/muddasser/creditcarddocker/restart
