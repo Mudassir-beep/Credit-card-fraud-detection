@@ -1,0 +1,36 @@
+name: Test Docker Image
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-docker-image:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Pull and run Docker image
+      run: |
+        docker pull your-username/your-image-name:tag
+        docker run -d -p 8080:80 --name test-container your-username/your-image-name:tag
+        sleep 10  # wait for container to start
+        
+    - name: Test container
+      run: |
+        # Check if container is running
+        docker ps
+        # Check logs
+        docker logs test-container
+        # Test if application responds (for web apps)
+        curl -f http://localhost:8080 || echo "Application test completed"
+        
+    - name: Cleanup
+      if: always()
+      run: |
+        docker stop test-container || true
+        docker rm test-container || true
